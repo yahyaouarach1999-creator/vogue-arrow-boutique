@@ -1,2 +1,2 @@
-# vogue-arrow-boutique
+# CLOTHYA
 A high-end e-commerce platform for the Vogue &amp; Arrow spring/summer collection."
