@@ -1,45 +1,68 @@
 import streamlit as st
 import pandas as pd
 
-# --- 1. SETTINGS ---
-st.set_page_config(page_title="VOGUE", layout="wide")
+# --- 1. SETTINGS & BRANDING ---
+st.set_page_config(page_title="CLOTHYA", layout="wide")
 
-# --- 2. DATA ENGINE ---
+st.markdown("""
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;700&display=swap');
+        .stApp { background-color: #FFFFFF; }
+        .brand-name { 
+            font-family: 'Montserrat', sans-serif; 
+            font-size: 65px; 
+            text-align: center; 
+            font-weight: 700;
+            color: #000; 
+            letter-spacing: 10px;
+            margin-bottom: 0px;
+        }
+        .stButton>button { 
+            border-radius: 0px; 
+            background-color: #000; 
+            color: #fff; 
+            border: none;
+            transition: 0.3s;
+        }
+        .stButton>button:hover { background-color: #333; color: #fff; border: none; }
+    </style>
+""", unsafe_allow_html=True)
+
+# --- 2. DATA LOAD ---
 @st.cache_data
 def load_data():
     return pd.read_csv("products.csv")
 
 df = load_data()
 
-# --- 3. SESSION STATE INITIALIZATION ---
+# --- 3. STATE MANAGEMENT ---
 if 'view' not in st.session_state: st.session_state.view = 'gallery'
-if 'selected_product' not in st.session_state: st.session_state.selected_product = None
 if 'cart' not in st.session_state: st.session_state.cart = []
+if 'selected_prod_id' not in st.session_state: st.session_state.selected_prod_id = None
 
 # --- 4. HEADER ---
-st.markdown("<h1 style='text-align:center; font-family:serif;'>VOGUE & ARROW</h1>", unsafe_allow_html=True)
+st.markdown("<h1 class='brand-name'>CLOTHYA</h1>", unsafe_allow_html=True)
+st.markdown("<p style='text-align:center; color:#888; letter-spacing:5px;'>DESIGNED BY YAHYA</p>", unsafe_allow_html=True)
+st.divider()
 
-# --- 5. NAVIGATION LOGIC ---
-def go_to_product(product):
-    st.session_state.selected_product = product
-    st.session_state.view = 'details'
-
-def go_to_gallery():
-    st.session_state.view = 'gallery'
-
-# --- 6. GALLERY VIEW ---
+# --- 5. GALLERY VIEW ---
 if st.session_state.view == 'gallery':
-    # Sidebar Filters
+    # Sidebar Filters & Cart Summary
     with st.sidebar:
-        st.header("🛒 Bag")
+        st.header("🛒 YOUR BAG")
         if not st.session_state.cart:
-            st.write("Your bag is empty.")
+            st.write("Bag is empty.")
         else:
             total = sum(item['Price'] for item in st.session_state.cart)
-            for item in st.session_state.cart:
-                st.write(f"• {item['Name']} (${item['Price']})")
+            for i, item in enumerate(st.session_state.cart):
+                c1, c2 = st.columns([3, 1])
+                c1.write(f"{item['Name']} (${item['Price']})")
+                if c2.button("Remove", key=f"rem_{i}"):
+                    st.session_state.cart.pop(i)
+                    st.rerun()
+            st.divider()
             st.write(f"**Total: ${total:.2f}**")
-            if st.button("Proceed to Checkout"):
+            if st.button("PROCEED TO CHECKOUT"):
                 st.session_state.view = 'checkout'
                 st.rerun()
 
@@ -50,16 +73,17 @@ if st.session_state.view == 'gallery':
             st.image(row['Image'], use_container_width=True)
             st.write(f"**{row['Name']}**")
             st.write(f"${row['Price']}")
-            if st.button("View Details", key=f"view_{row['ID']}"):
-                go_to_product(row)
+            if st.button("SEE DETAILS", key=f"details_{row['ID']}"):
+                st.session_state.selected_prod_id = row['ID']
+                st.session_state.view = 'details'
                 st.rerun()
 
-# --- 7. PRODUCT DETAIL VIEW ---
+# --- 6. DETAIL VIEW ---
 elif st.session_state.view == 'details':
-    product = st.session_state.selected_product
+    product = df[df['ID'] == st.session_state.selected_prod_id].iloc[0]
     
-    if st.button("← Back to Collection"):
-        go_to_gallery()
+    if st.button("← BACK TO COLLECTION"):
+        st.session_state.view = 'gallery'
         st.rerun()
     
     col1, col2 = st.columns([1, 1])
@@ -67,42 +91,38 @@ elif st.session_state.view == 'details':
         st.image(product['Image'], use_container_width=True)
     with col2:
         st.title(product['Name'])
-        st.subheader(f"${product['Price']}")
+        st.header(f"${product['Price']}")
         st.write(f"Category: {product['Category']} | Gender: {product['Gender']}")
         st.write("---")
-        st.write("Premium quality material, designed for the 2026 Spring/Summer collection. This piece combines comfort with timeless style.")
+        st.write("Exclusively crafted for CLOTHYA. This piece represents the intersection of modern street-style and high-end luxury.")
         
-        size = st.selectbox("Select Size", ["S", "M", "L", "XL"])
+        size = st.select_slider("SELECT SIZE", options=["XS", "S", "M", "L", "XL"])
         
-        if st.button("Add to Bag"):
+        if st.button("ADD TO BAG"):
             st.session_state.cart.append({"Name": product['Name'], "Price": product['Price'], "Size": size})
-            st.toast(f"Added {product['Name']} to your bag!")
+            st.toast(f"Added {product['Name']} to Bag!")
 
-# --- 8. CHECKOUT VIEW ---
+# --- 7. CHECKOUT VIEW ---
 elif st.session_state.view == 'checkout':
-    st.title("Secure Checkout")
-    if st.button("← Return to Shop"):
-        go_to_gallery()
+    st.title("CHECKOUT")
+    if st.button("← RETURN TO SHOP"):
+        st.session_state.view = 'gallery'
         st.rerun()
-        
+    
     if not st.session_state.cart:
-        st.warning("Your bag is empty!")
+        st.info("Nothing in your bag yet.")
     else:
-        col_a, col_b = st.columns([2, 1])
-        with col_a:
-            st.markdown("### 1. Delivery Details")
+        c1, c2 = st.columns([2, 1])
+        with c1:
+            st.subheader("Shipping Details")
             st.text_input("Full Name")
-            st.text_input("Shipping Address")
-            st.text_input("Email")
-            
-        with col_b:
-            st.markdown("### 2. Order Summary")
+            st.text_input("Address Line 1")
+            st.text_input("City")
+            st.button("CONFIRM & PAY")
+        with c2:
+            st.subheader("Order Summary")
             total = sum(item['Price'] for item in st.session_state.cart)
             for item in st.session_state.cart:
-                st.write(f"{item['Name']} ({item['Size']}) - ${item['Price']}")
+                st.write(f"• {item['Name']} - ${item['Price']}")
             st.divider()
-            st.write(f"**Grand Total: ${total:.2f}**")
-            if st.button("Complete Purchase"):
-                st.balloons()
-                st.success("Thank you! Your order has been placed.")
-                st.session_state.cart = []
+            st.write(f"### TOTAL: ${total:.2f}")
