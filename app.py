@@ -1,30 +1,45 @@
 import streamlit as st
 import pandas as pd
 
-# --- 1. SETTINGS & BRANDING ---
-st.set_page_config(page_title="CLOTHYA", layout="wide")
+# --- 1. SETTINGS & MOROCCAN-USA THEME ---
+st.set_page_config(page_title="CLOTHYA | Fes to NYC", layout="wide")
 
 st.markdown("""
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;700&display=swap');
-        .stApp { background-color: #FFFFFF; }
+        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Inter:wght@300;600&display=swap');
+        
+        .stApp { background-color: #FFFDF9; } /* Sand Beige Tint */
+        
         .brand-name { 
-            font-family: 'Montserrat', sans-serif; 
-            font-size: 65px; 
+            font-family: 'Cinzel', serif; 
+            font-size: 70px; 
             text-align: center; 
-            font-weight: 700;
-            color: #000; 
-            letter-spacing: 10px;
+            color: #1E3A8A; /* Atlas Blue */
+            letter-spacing: 12px;
             margin-bottom: 0px;
         }
+        
+        .motto {
+            text-align: center;
+            color: #B45309; /* Saffron Orange */
+            letter-spacing: 4px;
+            font-weight: 600;
+            margin-top: -10px;
+        }
+
+        /* Styling buttons to look like leather/luxury tags */
         .stButton>button { 
             border-radius: 0px; 
-            background-color: #000; 
+            background-color: #1E3A8A; 
             color: #fff; 
-            border: none;
-            transition: 0.3s;
+            border: 2px solid #1E3A8A;
+            font-weight: 600;
         }
-        .stButton>button:hover { background-color: #333; color: #fff; border: none; }
+        .stButton>button:hover { 
+            background-color: #B45309; 
+            border-color: #B45309;
+            color: white; 
+        }
     </style>
 """, unsafe_allow_html=True)
 
@@ -42,38 +57,43 @@ if 'selected_prod_id' not in st.session_state: st.session_state.selected_prod_id
 
 # --- 4. HEADER ---
 st.markdown("<h1 class='brand-name'>CLOTHYA</h1>", unsafe_allow_html=True)
-st.markdown("<p style='text-align:center; color:#888; letter-spacing:5px;'>DESIGNED BY YAHYA</p>", unsafe_allow_html=True)
-st.divider()
+st.markdown("<p class='motto'>MARRAKECH HERITAGE • NYC STREETWEAR</p>", unsafe_allow_html=True)
+st.write("---")
 
 # --- 5. GALLERY VIEW ---
 if st.session_state.view == 'gallery':
-    # Sidebar Filters & Cart Summary
     with st.sidebar:
-        st.header("🛒 YOUR BAG")
+        st.markdown("### 🏺 COLLECTIONS")
+        gender = st.radio("Department", ["All", "Men", "Women"])
+        
+        st.divider()
+        st.markdown("### 🛒 SHOPPING BAG")
         if not st.session_state.cart:
-            st.write("Bag is empty.")
+            st.write("Empty bag.")
         else:
             total = sum(item['Price'] for item in st.session_state.cart)
             for i, item in enumerate(st.session_state.cart):
                 c1, c2 = st.columns([3, 1])
-                c1.write(f"{item['Name']} (${item['Price']})")
-                if c2.button("Remove", key=f"rem_{i}"):
+                c1.write(f"{item['Name']} ({item['Size']})")
+                if c2.button("✕", key=f"rem_{i}"):
                     st.session_state.cart.pop(i)
                     st.rerun()
-            st.divider()
             st.write(f"**Total: ${total:.2f}**")
             if st.button("PROCEED TO CHECKOUT"):
                 st.session_state.view = 'checkout'
                 st.rerun()
 
-    # Product Grid
+    # Filtered View
+    display_df = df if gender == "All" else df[df['Gender'] == gender]
+    
+    
     cols = st.columns(4)
-    for idx, row in df.iterrows():
+    for idx, row in display_df.reset_index().iterrows():
         with cols[idx % 4]:
             st.image(row['Image'], use_container_width=True)
-            st.write(f"**{row['Name']}**")
+            st.markdown(f"**{row['Name']}**")
             st.write(f"${row['Price']}")
-            if st.button("SEE DETAILS", key=f"details_{row['ID']}"):
+            if st.button("DISCOVER", key=f"det_{row['ID']}"):
                 st.session_state.selected_prod_id = row['ID']
                 st.session_state.view = 'details'
                 st.rerun()
@@ -82,7 +102,7 @@ if st.session_state.view == 'gallery':
 elif st.session_state.view == 'details':
     product = df[df['ID'] == st.session_state.selected_prod_id].iloc[0]
     
-    if st.button("← BACK TO COLLECTION"):
+    if st.button("← BACK TO SOUK"):
         st.session_state.view = 'gallery'
         st.rerun()
     
@@ -91,38 +111,31 @@ elif st.session_state.view == 'details':
         st.image(product['Image'], use_container_width=True)
     with col2:
         st.title(product['Name'])
-        st.header(f"${product['Price']}")
-        st.write(f"Category: {product['Category']} | Gender: {product['Gender']}")
+        st.subheader(f"${product['Price']}")
         st.write("---")
-        st.write("Exclusively crafted for CLOTHYA. This piece represents the intersection of modern street-style and high-end luxury.")
+        st.write("**Designer's Note:** Hand-selected patterns inspired by Moroccan Zellige and North African textures, tailored for a modern Western silhouette.")
         
-        size = st.select_slider("SELECT SIZE", options=["XS", "S", "M", "L", "XL"])
-        
+        size = st.selectbox("SELECT SIZE", ["S", "M", "L", "XL"])
         if st.button("ADD TO BAG"):
             st.session_state.cart.append({"Name": product['Name'], "Price": product['Price'], "Size": size})
-            st.toast(f"Added {product['Name']} to Bag!")
+            st.toast("Item added to bag!")
 
 # --- 7. CHECKOUT VIEW ---
 elif st.session_state.view == 'checkout':
-    st.title("CHECKOUT")
-    if st.button("← RETURN TO SHOP"):
+    st.title("Secure Checkout")
+    if st.button("← RETURN"):
         st.session_state.view = 'gallery'
         st.rerun()
     
-    if not st.session_state.cart:
-        st.info("Nothing in your bag yet.")
-    else:
-        c1, c2 = st.columns([2, 1])
-        with c1:
-            st.subheader("Shipping Details")
-            st.text_input("Full Name")
-            st.text_input("Address Line 1")
-            st.text_input("City")
-            st.button("CONFIRM & PAY")
-        with c2:
-            st.subheader("Order Summary")
-            total = sum(item['Price'] for item in st.session_state.cart)
-            for item in st.session_state.cart:
-                st.write(f"• {item['Name']} - ${item['Price']}")
-            st.divider()
-            st.write(f"### TOTAL: ${total:.2f}")
+    c1, c2 = st.columns([2, 1])
+    with c1:
+        st.text_input("Full Name")
+        st.text_input("Shipping Address")
+        if st.button("COMPLETE ORDER"):
+            st.balloons()
+            st.success("B'saha! Your order is confirmed.")
+            st.session_state.cart = []
+    with c2:
+        st.markdown("### Order Summary")
+        for item in st.session_state.cart:
+            st.write(f"• {item['Name']} - ${item['Price']}")
