@@ -1,69 +1,108 @@
 import streamlit as st
 import pandas as pd
 
-st.set_page_config(page_title="VOGUE & ARROW", layout="wide")
+# --- 1. SETTINGS ---
+st.set_page_config(page_title="VOGUE", layout="wide")
 
-# Luxury Styling
-st.markdown("""
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&display=swap');
-        .main-title { font-family: 'Playfair Display', serif; font-size: 50px; text-align: center; margin-bottom: 0px; }
-        .stButton>button { border-radius: 0px; background-color: #000; color: #fff; border: none; }
-    </style>
-""", unsafe_allow_html=True)
-
-st.markdown("<h1 class='main-title'>VOGUE & ARROW</h1>", unsafe_allow_html=True)
-st.markdown("<p style='text-align:center; color:#888; letter-spacing:2px;'>COLLECTION 2026</p>", unsafe_allow_html=True)
-
-# Data Load
+# --- 2. DATA ENGINE ---
 @st.cache_data
 def load_data():
     return pd.read_csv("products.csv")
 
 df = load_data()
 
-# --- SIDEBAR NAVIGATION ---
-with st.sidebar:
-    st.title("🛍️ FILTERS")
-    gender = st.selectbox("Department", ["All", "Men", "Women"])
+# --- 3. SESSION STATE INITIALIZATION ---
+if 'view' not in st.session_state: st.session_state.view = 'gallery'
+if 'selected_product' not in st.session_state: st.session_state.selected_product = None
+if 'cart' not in st.session_state: st.session_state.cart = []
+
+# --- 4. HEADER ---
+st.markdown("<h1 style='text-align:center; font-family:serif;'>VOGUE & ARROW</h1>", unsafe_allow_html=True)
+
+# --- 5. NAVIGATION LOGIC ---
+def go_to_product(product):
+    st.session_state.selected_product = product
+    st.session_state.view = 'details'
+
+def go_to_gallery():
+    st.session_state.view = 'gallery'
+
+# --- 6. GALLERY VIEW ---
+if st.session_state.view == 'gallery':
+    # Sidebar Filters
+    with st.sidebar:
+        st.header("🛒 Bag")
+        if not st.session_state.cart:
+            st.write("Your bag is empty.")
+        else:
+            total = sum(item['Price'] for item in st.session_state.cart)
+            for item in st.session_state.cart:
+                st.write(f"• {item['Name']} (${item['Price']})")
+            st.write(f"**Total: ${total:.2f}**")
+            if st.button("Proceed to Checkout"):
+                st.session_state.view = 'checkout'
+                st.rerun()
+
+    # Product Grid
+    cols = st.columns(4)
+    for idx, row in df.iterrows():
+        with cols[idx % 4]:
+            st.image(row['Image'], use_container_width=True)
+            st.write(f"**{row['Name']}**")
+            st.write(f"${row['Price']}")
+            if st.button("View Details", key=f"view_{row['ID']}"):
+                go_to_product(row)
+                st.rerun()
+
+# --- 7. PRODUCT DETAIL VIEW ---
+elif st.session_state.view == 'details':
+    product = st.session_state.selected_product
     
-    # Dynamic Category Filter based on Gender
-    available_cats = df['Category'].unique() if gender == "All" else df[df['Gender'] == gender]['Category'].unique()
-    category = st.selectbox("Category", ["All Categories"] + list(available_cats))
+    if st.button("← Back to Collection"):
+        go_to_gallery()
+        st.rerun()
     
-    st.divider()
-    st.title("🛒 YOUR BAG")
-    if 'cart' not in st.session_state: st.session_state.cart = []
-    
+    col1, col2 = st.columns([1, 1])
+    with col1:
+        st.image(product['Image'], use_container_width=True)
+    with col2:
+        st.title(product['Name'])
+        st.subheader(f"${product['Price']}")
+        st.write(f"Category: {product['Category']} | Gender: {product['Gender']}")
+        st.write("---")
+        st.write("Premium quality material, designed for the 2026 Spring/Summer collection. This piece combines comfort with timeless style.")
+        
+        size = st.selectbox("Select Size", ["S", "M", "L", "XL"])
+        
+        if st.button("Add to Bag"):
+            st.session_state.cart.append({"Name": product['Name'], "Price": product['Price'], "Size": size})
+            st.toast(f"Added {product['Name']} to your bag!")
+
+# --- 8. CHECKOUT VIEW ---
+elif st.session_state.view == 'checkout':
+    st.title("Secure Checkout")
+    if st.button("← Return to Shop"):
+        go_to_gallery()
+        st.rerun()
+        
     if not st.session_state.cart:
-        st.write("Bag is empty.")
+        st.warning("Your bag is empty!")
     else:
-        total = sum(item['price'] for item in st.session_state.cart)
-        for i, item in enumerate(st.session_state.cart):
-            st.write(f"**{item['name']}** - ${item['price']}")
-        st.write(f"### Total: ${total:.2f}")
-        if st.button("CHECKOUT"):
-            st.success("Order Placed!")
-            st.session_state.cart = []
-
-# --- FILTERING LOGIC ---
-display_df = df
-if gender != "All":
-    display_df = display_df[display_df['Gender'] == gender]
-if category != "All Categories":
-    display_df = display_df[display_df['Category'] == category]
-
-# --- GRID DISPLAY (4 COLUMNS) ---
-st.markdown(f"### Showing {len(display_df)} Items")
-
-
-cols = st.columns(4)
-for idx, row in display_df.reset_index().iterrows():
-    with cols[idx % 4]:
-        st.image(row['Image'], use_container_width=True)
-        st.write(f"**{row['Name']}**")
-        st.write(f"${row['Price']}")
-        if st.button(f"ADD TO BAG", key=f"btn_{row['ID']}"):
-            st.session_state.cart.append({"name": row['Name'], "price": row['Price']})
-            st.toast(f"Added {row['Name']}!")
-            st.rerun()
+        col_a, col_b = st.columns([2, 1])
+        with col_a:
+            st.markdown("### 1. Delivery Details")
+            st.text_input("Full Name")
+            st.text_input("Shipping Address")
+            st.text_input("Email")
+            
+        with col_b:
+            st.markdown("### 2. Order Summary")
+            total = sum(item['Price'] for item in st.session_state.cart)
+            for item in st.session_state.cart:
+                st.write(f"{item['Name']} ({item['Size']}) - ${item['Price']}")
+            st.divider()
+            st.write(f"**Grand Total: ${total:.2f}**")
+            if st.button("Complete Purchase"):
+                st.balloons()
+                st.success("Thank you! Your order has been placed.")
+                st.session_state.cart = []
