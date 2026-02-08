@@ -1,11 +1,9 @@
 ID,Name,Gender,Category,Price,Image
-1,Fes Silk Kaftan Top,Women,Tops,120.00,https://images.unsplash.com/photo-1589156229687-496a31ad1d1f?w=600
-2,Marrakech Moto Jacket,Men,Outerwear,350.00,https://images.unsplash.com/photo-1521225091412-4b553c50954b?w=600
-3,Atlas Mountain Hoodie,Men,Tops,85.00,https://images.unsplash.com/photo-1556821840-3a63f95609a7?w=600
-4,Sahara Sands Maxi Skirt,Women,Skirts,95.00,https://images.unsplash.com/photo-1503431128597-3ef84d8b5801?w=600
-5,Medina Graphic Tee,Men,T-Shirts,45.00,https://images.unsplash.com/photo-1521572267360-ee0c2909d518?w=600
-6,Casablanca Cropped Tee,Women,T-Shirts,38.00,https://images.unsplash.com/photo-1554560317-c99083d877ad?w=600
-7,Chefchaouen Blue Socks,Men,Socks,15.00,https://images.unsplash.com/photo-1582967702081-1520a23f3147?w=600
-8,Mosaic Print Socks,Women,Socks,15.00,https://images.unsplash.com/photo-1586350977771-b3b0abd50c82?w=600
-9,Souk Leather Loafers,Men,Shoes,195.00,https://images.unsplash.com/photo-1614252235316-8c857d38b5f4?w=600
-10,Zellige Pattern Dress,Women,Dresses,210.00,https://images.unsplash.com/photo-1496747611176-843222e1e57c?w=600
+1,Saffron Street Hoodie,Men,Tops,85.00,https://images.unsplash.com/photo-1556821840-3a63f95609a7?q=80&w=600
+2,Atlas Blue Kaftan,Women,Dresses,210.00,https://images.unsplash.com/photo-1589156229687-496a31ad1d1f?q=80&w=600
+3,Medina Leather Bomber,Men,Outerwear,350.00,https://images.unsplash.com/photo-1521225091412-4b553c50954b?q=80&w=600
+4,Zellige Silk Scarf,Women,Accessories,45.00,https://images.unsplash.com/photo-1606760227091-3dd870d97f1d?q=80&w=600
+5,Sahara Sand Chinos,Men,Bottoms,95.00,https://images.unsplash.com/photo-1473966968600-fa804b86820b?q=80&w=600
+6,Casablanca Linen Dress,Women,Dresses,180.00,https://images.unsplash.com/photo-1496747611176-843222e1e57c?q=80&w=600
+7,Nomad Mesh Runner,Men,Shoes,120.00,https://images.unsplash.com/photo-1542291026-7eec264c27ff?q=80&w=600
+8,Hammam Spa Robe,Women,Tops,75.00,https://images.unsplash.com/photo-1583337130417-3346a1be7dee?q=80&w=600
