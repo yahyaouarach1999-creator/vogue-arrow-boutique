@@ -1,5 +1,21 @@
-ID,Name,Category,Price,Image
-1,Classic Silk Blouse,Tops,120.00,https://images.unsplash.com/photo-1583337130417-3346a1be7dee?auto=format&fit=crop&w=800&q=80
-2,Tailored Wool Blazer,Outerwear,350.00,https://images.unsplash.com/photo-1591047139829-d91aecb6caea?auto=format&fit=crop&w=800&q=80
-3,High-Waist Denim,Bottoms,95.00,https://images.unsplash.com/photo-1541099649105-f69ad21f3246?auto=format&fit=crop&w=800&q=80
-4,Linen Midi Dress,Dresses,180.00,https://images.unsplash.com/photo-1496747611176-843222e1e57c?auto=format&fit=crop&w=800&q=80
+ID,Name,Gender,Category,Price,Image
+1,Classic Silk Blouse,Women,Tops,120.00,https://images.unsplash.com/photo-1583337130417-3346a1be7dee?w=500
+2,Tailored Wool Blazer,Women,Outerwear,350.00,https://images.unsplash.com/photo-1591047139829-d91aecb6caea?w=500
+3,Pleated Floral Skirt,Women,Skirts,85.00,https://images.unsplash.com/photo-1583496661160-fb5886a0aaaa?w=500
+4,Satin A-Line Skirt,Women,Skirts,95.00,https://images.unsplash.com/photo-1548438294-1ad5d5f4f063?w=500
+5,Essential White Tee,Women,T-Shirts,35.00,https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=500
+6,Graphic Vintage Tee,Women,T-Shirts,45.00,https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?w=500
+7,Pastel Crew Socks,Women,Socks,15.00,https://images.unsplash.com/photo-1586350977771-b3b0abd50c82?w=500
+8,Wool Winter Socks,Women,Socks,22.00,https://images.unsplash.com/photo-1590001004511-9f9392237937?w=500
+9,Leather Chelsea Boots,Women,Shoes,220.00,https://images.unsplash.com/photo-1638247025967-b4e38f787b76?w=500
+10,Linen Midi Dress,Women,Dresses,180.00,https://images.unsplash.com/photo-1496747611176-843222e1e57c?w=500
+11,Slim-Fit Chinos,Men,Bottoms,85.00,https://images.unsplash.com/photo-1473966968600-fa804b86820b?w=500
+12,Oxford Button Down,Men,Tops,75.00,https://images.unsplash.com/photo-1596755094514-f87034a264c6?w=500
+13,Heavyweight Black Tee,Men,T-Shirts,40.00,https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=500
+14,V-Neck Pima Cotton,Men,T-Shirts,38.00,https://images.unsplash.com/photo-1521572267360-ee0c2909d518?w=500
+15,Argyle Dress Socks,Men,Socks,18.00,https://images.unsplash.com/photo-1582967702081-1520a23f3147?w=500
+16,Performance Gym Socks,Men,Socks,20.00,https://images.unsplash.com/photo-1612048604901-b37996c979d3?w=500
+17,Denim Trucker Jacket,Men,Outerwear,110.00,https://images.unsplash.com/photo-1551537482-f2075a1d41f2?w=500
+18,Classic Trench Coat,Men,Outerwear,450.00,https://images.unsplash.com/photo-1544923246-77307dd654ca?w=500
+19,Tailored Wool Trousers,Men,Bottoms,160.00,https://images.unsplash.com/photo-1594932224826-94b272424b3b?w=500
+20,Leather Loafers,Men,Shoes,195.00,https://images.unsplash.com/photo-1614252235316-8c857d38b5f4?w=500
